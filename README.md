@@ -86,7 +86,6 @@ Em seguida, instale as dependências:
 # Teste mínimo
 
 Após instalar e configurar as dependências, o notebook Python `3 - Plotting results.ipynb` pode ser executado para validar o funcionamento das bibliotecas instaladas.
-Caso seja desejado executar os experimentos, é recomendável validar a instalação correta do PyTorch com aceleração gráfica, conforme instruções disponíveis em `https://pytorch.org/get-started/locally/`.
 
 # Experimentos
 

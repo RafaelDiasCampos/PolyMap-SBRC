@@ -1,3 +1,4 @@
 *
 !.gitignore
+!ton_iot
 !ton_iot/train_test_network.csv

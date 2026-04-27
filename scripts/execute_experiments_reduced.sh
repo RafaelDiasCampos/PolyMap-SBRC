@@ -8,7 +8,8 @@ echo "Instalando dependências"
 source .venv/bin/activate
 
 # Delete old results
-rm results/*
+rm -rf results
+mkdir results
 
 # Run experiments
 echo "Executando experimentos"
