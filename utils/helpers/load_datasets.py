@@ -132,66 +132,6 @@ def load_ctu_13() -> dict:
 
     return dataset
 
-
-def load_bot_iot_full() -> dict:
-    dataLoader = DataLoader("dataset/bot_iot_full")
-    original_columns = ['pkSeqID', 'stime', 'flgs', 'proto', 'saddr', 'sport', 'daddr', 'dport', 'pkts', 'bytes', 'state', 'ltime', 'seq', 'dur', 'mean', 'stddev', 'smac',
-                        'dmac', 'sum', 'min', 'max', 'soui', 'doui', 'sco', 'dco', 'spkts', 'dpkts', 'sbytes', 'dbytes', 'rate', 'srate', 'drate', 'attack', 'category', 'subcategory']
-
-    columns = ["sport",
-               "dport",
-               "proto",
-               "dur",
-               "sbytes",
-               "dbytes",
-               "state",
-               "spkts",
-               "dpkts",
-               "category"]
-
-    dataset = {}
-
-    # Load data from the bot_iot dataset
-    dataset["dataset"] = load_bot_iot()["dataset"].copy()
-
-    # Load Full Data
-    full_data = dataLoader.load_data(
-        columns=columns, original_columns=original_columns)
-    full_data.rename(columns={"category": "Label"}, inplace=True)
-
-    # Convert sport and dport rows to np.int32 -> Some values in these fields are 0x0303
-    cols = ['sport', 'dport']
-
-    for c in cols:
-        s = pd.to_numeric(full_data[c], errors='coerce')
-        s = s.where((s.notna()) & (np.floor(s) == s) & (s.between(1, 65535)))
-        full_data[c] = s.astype('Int64')
-
-    full_data = full_data.dropna(subset=cols)
-    full_data[cols] = full_data[cols].astype(np.int32)
-
-    labels_to_add = [
-        "Normal",
-        "Theft"
-    ]
-
-    # Drop labels from the dataset
-    dataset["dataset"] = dataset["dataset"][~dataset["dataset"]
-                                            ["Label"].isin(labels_to_add)]
-
-    # Add new labels to the dataset
-    full_data = full_data[full_data["Label"].isin(labels_to_add)]
-    dataset["dataset"] = pd.concat([dataset["dataset"], full_data])
-    del full_data
-
-    dataset["normal_label"] = "Normal"
-    dataset["functional_features"] = np.array([])
-    dataset["attack_frac"] = 0.2
-    dataset["move_inside"] = 0.001
-
-    return dataset
-
-
 def load_nsl_kdd() -> dict:
     dataLoader = DataLoader("dataset/nsl-kdd")
     columns = ["protocol_type",
@@ -222,15 +162,33 @@ def load_nsl_kdd() -> dict:
     return dataset
 
 
-def load_all_datasets(copies: int = None, random_state: int = None) -> dict:
-    datasets = {
-        "ton_iot": load_ton_iot(),
-        "bot_iot": load_bot_iot(),
-        "ctu_13": load_ctu_13(),
-        # "bot_iot_full": load_bot_iot_full(),
-        "nsl_kdd": load_nsl_kdd()
-    }
-
+def load_all_datasets(copies: int = None, random_state: int = None, frac: float = 1.0) -> dict:
+    datasets = {}
+    
+    try:
+        datasets["ton_iot"] = load_ton_iot()
+    except Exception as e:
+        print(f"Error loading TON IoT dataset: {e}")
+        
+    try:
+        datasets["bot_iot"] = load_bot_iot()
+    except Exception as e:
+        print(f"Error loading Bot IoT dataset: {e}")
+        
+    try:
+        datasets["ctu_13"] = load_ctu_13()
+    except Exception as e:
+        print(f"Error loading CTU-13 dataset: {e}")
+        
+    try:
+        datasets["nsl_kdd"] = load_nsl_kdd()
+    except Exception as e:
+        print(f"Error loading NSL-KDD dataset: {e}")
+        
+    if frac < 1.0:
+        for dataset_name, dataset in datasets.items():
+            dataset["dataset"] = dataset["dataset"].sample(frac=frac, random_state=random_state).reset_index(drop=True)
+    
     # Optionally create shuffled copies of each dataset
     if copies is not None:
         if random_state is None:
