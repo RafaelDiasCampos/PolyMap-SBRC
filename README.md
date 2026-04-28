@@ -90,7 +90,7 @@ Após instalar e configurar as dependências, o notebook Python `3 - Plotting re
 # Experimentos
 
 A realização dos experimentos completos exige altos recursos computacionais e um tempo elevado de execução de múltiplos dias.
-Dessa forma, também oferecemos uma versão reduzida que permite executar experimentos em aproximadamente 5 horas no dataset TON_IoT, utilizando uma fração de 30% de seus dados e com apenas 3 repetições (ao invés de 7).
+Dessa forma, também oferecemos uma versão reduzida que permite executar experimentos em aproximadamente 5-6 horas no dataset TON_IoT, utilizando uma fração de 30% de seus dados e com apenas 3 repetições (ao invés de 7).
 Nesta seção, descrevemos o processo de executar esses experimentos.
 
 ## Versão reduzida
