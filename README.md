@@ -24,13 +24,10 @@ Os resultados obtidos para os modelos de detecção e métodos de ataque podem s
 Para estes artefatos, são considerados os seguintes selos, com base nos códigos e resultados apresentados:
 
 - Artefatos Disponíveis (SeloD)
-- Artefatos Funcionais (SeloF)
-- Artefatos Sustentáveis (SeloS)
-- Experimentos Reprodutíveis (SeloR)
 
 # Informações básicas
 
-Os códigos contidos neste repositório foram desenvolvidos em Python, com o aux´ilio de bibliotecas de terceiros. A seção a seguir descreve as dependências necessárias para configurar e executar os experimentos.
+Os códigos contidos neste repositório foram desenvolvidos em Python, com o auxílio de bibliotecas de terceiros. A seção a seguir descreve as dependências necessárias para configurar e executar os experimentos.
 
 # Dependências
 
@@ -80,7 +77,13 @@ cd PolyMap-SBRC
 Em seguida, instale as dependências:
 
 ```
-./scripts/install_dependencies.sh
+# Criação e ativação do venv
+python3 -m venv .venv
+source .venv/bin/activate
+
+# Instalação das depêndencias
+pip3 install -r requirements.txt
+pip3 install torch torchvision
 ```
 
 # Teste mínimo
@@ -101,17 +104,31 @@ Para executar a versão reduzida dos experimentos, execute o script automatizado
 ./scripts/execute_experiments_reduced.sh
 ```
 
+Os arquivos necessários do dataset TON-IoT já estão incluso nesse repositório, e portanto não necessitam de download separado.
 Os resultados obtidos serão salvos na pasta `results` e podem ser visualizados para análise.
 
-### Resultados esperados - versão reduzida
+## Reivindicação #1: Maior estabilidade dos resultados obtidos com o PolyMap
 
-Para a versão reduzida dos experimentos, é esperado obter resultados similares aos obtidos no dataset TON_IoT na versão original, conforme demonstrado nessa seção:
+Após executar a versão reduzida (ou completa) dos experimentos, devem ser obtidos resultados na pasta `results` que indicam a maior estabilidade do PolyMap em comparação com os métodos comparados IDSGAN e Gen-AAL.
+Em especial, o arquivo `results/attack_results_ton_iot.png` deve demonstrar que as execuções do PolyMap apresentam menor variação em seus resultados.
+Resultados similares devem ser observados caso seja feita a execução da versão completa dos experimentos, com gráficos adicionais nos arquivos `results/attack_results_bot_iot.png`, `results/attack_results_ctu_13.png` e `results/attack_results_nsl_kdd.png`, referentes aos demais datasets.
 
-#### Taxa de sucesso e distância média obtidas
+![Resultados TON_IoT](results/reduced/attack_results_ton_iot.png)
+
+## Reivindicação #2: PolyMap obtém uma taxa de sucesso de evasão similar e uma distância média menor aos outros métodos.
+
+Após a execução dos experimentos, o arquivo `results/attack_results.png` deve demonstrar uma taxa de sucesso similar obtida pelo PolyMap em comparação ao IDSGAN e Gen-AAL.
+Ao mesmo tempo, a distância média obtida foi inferior à obtida pelos demais métodos.
+Resultados similares devem ser observados caso seja feita a execução da versão completa dos experimentos, com subgráficos adicionais para os demais datasets utilizados.
+
 ![Resultados gerais do ataque](results/reduced/attack_results.png)
 
-#### Taxa de sucesso vs. distância média obtidas nas redes FNN (esquerda) e SNN (direita).
-![Resultados TON_IoT](results/reduced/attack_results_ton_iot.png)
+## Reivindicação #3: PolyMap envia um número de amostras para classificação entre a quantidade enviada pelos demais métodos.
+
+Após a execução dos experimentos, o arquivo `results/query_stats_boxplots.png` deve demonstrar que, durante a etapa de treinamento dos métodos de ataque, PolyMap envia um número de requisições inferior ao IDSGAN mas superior ao Gen-AAL.
+Resultados similares devem ser observados caso seja feita a execução da versão completa dos experimentos.
+
+![Quantidade de requisições enviadas](results/reduced/query_stats_boxplots.png)
 
 ## Versão completa
 
@@ -123,11 +140,14 @@ As seções a seguir descrevem a execução de cada etapa dos experimentos.
 
 ### Obtenção dos datasets
 
-Para obter os datasets, execute o script criado e siga as instruções para fazer download dos arquivos e copiá-los para as pastas. Esse processo é um pouco manual.
+Para obter os datasets, execute o script criado e siga as instruções para fazer download dos arquivos e copiá-los para as pastas.
+Esse processo realiza o download automatizado do dataset CTU-13, mas requer download manual de arquivos referentes aos datasets Bot-IoT e NSL-KDD, conforme instruções exibidas na tela.
 
 ```
-./scripts/install_dependencies.sh
+./scripts/get_datasets.sh
 ```
+
+Após realizar o download dos arquivos, é realizada uma validação de seus checksums para garantir a ausência de erros durante esse processo.
 
 ### Configuração dos parâmetros
 
@@ -152,25 +172,6 @@ Os resultados obtidos são exibidos no notebook e armazenados no arquivo `result
 
 Depois de executar os ataques, o notebook `3 - Plotting results.ipynb` pode ser utilizado para gerar gráficos indicando as métricas obtidas por cada ataque contra os modelos de detecção.
 Os gráficos gerados são exibidos no notebook e salvos na pasta `results`.
-
-### Resultados esperados - versão completa
-
-Esta seção contém os resultados experimentais obtidos pela execução dos métodos de ataque.
-
-#### Taxa de sucesso e distância média obtidas em cada dataset
-![Resultados gerais do ataque](results/attack_results.png)
-
-#### Taxa de sucesso vs. distância média obtidas em cada execução do dataset TON_IoT em redes FNN (esquerda) e SNN (direita).
-![Resultados TON_IoT](results/attack_results_ton_iot.png)
-
-#### Taxa de sucesso vs. distância média obtidas em cada execução do dataset Bot-IoT em redes FNN (esquerda) e SNN (direita).
-![Resultados Bot-IoT](results/attack_results_bot_iot.png)
-
-#### Taxa de sucesso vs. distância média obtidas em cada execução do dataset NSL-KDD em redes FNN (esquerda) e SNN (direita).
-![Resultados NSL-KDD](results/attack_results_nsl_kdd.png)
-
-#### Taxa de sucesso vs. distância média obtidas em cada execução do dataset CTU-13 em redes FNN (esquerda) e SNN (direita).
-![Resultados CTU-13](results/attack_results_ctu_13.png)
 
 # LICENSE
 
